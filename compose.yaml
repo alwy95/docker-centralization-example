@@ -1,0 +1,5 @@
+include:
+  - log_monitor/docker-compose.yaml
+  - db1/docker-compose.yaml
+  - app1/docker-compose.yaml
+  - scheduler/docker-compose.yaml

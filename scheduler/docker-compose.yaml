@@ -1,0 +1,31 @@
+services:
+  scheduler:
+    image: mcuadros/ofelia:0.3.20
+    container_name: scheduler
+    restart: unless-stopped
+    command: daemon --config=/etc/ofelia/config.ini
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./archive:/archive
+      - ./script:/script
+      - ./logcli-static:/usr/bin/logcli:ro
+      - ./config.ini:/etc/ofelia/config.ini
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
+        loki-retries: 2
+        loki-timeout: 2s
+        loki-batch-size: "50"
+        keep-file: 'true'
+        mode: "non-blocking"
+        max-buffer-size: "4m"
+    networks:
+      - scheduler
+
+networks:
+  scheduler:
+    name: scheduler
+    driver: bridge

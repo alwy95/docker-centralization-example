@@ -1,0 +1,35 @@
+name: db1
+
+services:
+  db1:
+    image: postgres:16.11
+    container_name: db1
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
+        loki-retries: 2
+        loki-timeout: 2s
+        loki-batch-size: "50"
+        keep-file: 'true'
+        mode: "non-blocking"
+        max-buffer-size: "4m"
+    networks:
+      - network
+
+networks:
+  network:
+    name: db1
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: postgres_data

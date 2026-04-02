@@ -1,0 +1,39 @@
+auth_enabled: false
+
+server:
+  http_listen_port: ${LOKI_PORT}
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    # s3: storage cloud ...
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring: 
+    kvstore:
+      store: inmemory
+
+limits_config:
+  retention_period: 2w
+  allow_deletes: true
+  deletion_mode: filter-and-delete
+  max_entries_limit_per_query: 100000
+
+compactor:
+  working_directory: /loki/retention
+  compaction_interval: 30m
+  retention_enabled: true
+  retention_delete_delay: 2h
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index: 
+        prefix: index_
+        period: 24h
